@@ -5,14 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SocketAsync_Client_Bot_Server_Human"
         mc:Ignorable="d"
-        Title="Client(Human)-Server(Bot)" Height="290" Width="350">
+        Title="Client(Bot)-Server(Human)" Height="290" Width="350">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
@@ -27,11 +26,6 @@
 
         <Button Name="BtnConnect" Margin="3" Width="200" Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0" Click="Connect_Click">Connect</Button>
 
-        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="3">
-            <TextBox Name="TextInput" VerticalContentAlignment="Center" Margin="3" Width="250"></TextBox>
-            <Button Name="BtnSend" Margin="3" Width="70" Click="BtnSend_Click">Send</Button>
-        </StackPanel>
-
-        <TextBox Name="ChatBox" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="3" Grid.ColumnSpan="2" Grid.Row="4" Grid.Column="0" AcceptsReturn="True" IsReadOnly="True"/>
+        <TextBox Name="ChatBox" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="3" Grid.ColumnSpan="2" Grid.Row="3" Grid.Column="0" AcceptsReturn="True" IsReadOnly="True"/>
     </Grid>
 </Window>

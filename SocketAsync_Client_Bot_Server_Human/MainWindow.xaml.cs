@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
 namespace SocketAsync_Client_Bot_Server_Human
 {
@@ -27,9 +28,19 @@ namespace SocketAsync_Client_Bot_Server_Human
         private static readonly Regex _port = new Regex("[^0-9]");
         IPEndPoint _ipEndPoint;
         Socket _socket;
+        Random _random;
+        List<string> _requests;
         public MainWindow()
         {
             InitializeComponent();
+
+            _random = new Random();
+            _requests = new List<string>();
+
+            _requests.Add("Request 1");
+            _requests.Add("Request 2");
+            _requests.Add("Request 3");
+            _requests.Add("<Bye>");
         }
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
@@ -65,6 +76,8 @@ namespace SocketAsync_Client_Bot_Server_Human
 
                     ChatBox.Text = "Client connected to " +
                         _socket.RemoteEndPoint?.ToString() + " " + DateTime.Now.ToString() + "\r\n";
+
+                    RandomRequest();
                 }
                 catch (SocketException ex)
                 {
@@ -78,35 +91,61 @@ namespace SocketAsync_Client_Bot_Server_Human
                 BtnConnect.IsEnabled = true;
             }
         }
-        private void BtnSend_Click(object sender, RoutedEventArgs e)
+        private void RandomRequest()
         {
-            BtnSend.IsEnabled = false;
 
             Dispatcher.Invoke(async () =>
             {
-                string message = "Client: " + TextInput.Text;
-                byte[]? msgByte = Encoding.Unicode.GetBytes(message);
-                await _socket.SendAsync(msgByte, SocketFlags.None);
+                int index = 0;
 
-                ChatBox.Text += message + "\r\n";
-
-                byte[] buffer = new byte[1024];
-                int received = await _socket.ReceiveAsync(buffer, SocketFlags.None);
-                string response = Encoding.Unicode.GetString(buffer, 0, received);
-
-                if (response.IndexOf("<Bye>") > -1)
+                while (true)
                 {
-                    ChatBox.Text += "Disconnected to server " + DateTime.Now.ToString();
+                    Thread.Sleep(500);
 
-                    _socket.Shutdown(SocketShutdown.Both);
-                    _socket.Close();
+                    switch (_random.Next(1, 11))
+                    {
+                        case 1:
+                        case 2:
+                        case 3:
+                            index = 0;
+                            break;
+                        case 4:
+                        case 5:
+                        case 6:
+                            index = 1;
+                            break;
+                        case 7:
+                        case 8:
+                        case 9:
+                            index = 2;
+                            break;
+                        case 10:
+                            index = 3;
+                            break;
+                    }
 
-                    return;
+                    string message = "Client: " + _requests[index];
+                    byte[]? msgByte = Encoding.Unicode.GetBytes(message);
+                    await _socket.SendAsync(msgByte, SocketFlags.None);
+
+                    ChatBox.Text += message + "\r\n";
+
+                    byte[] buffer = new byte[1024];
+                    int received = await _socket.ReceiveAsync(buffer, SocketFlags.None);
+                    string response = Encoding.Unicode.GetString(buffer, 0, received);
+
+                    if (response.IndexOf("<Bye>") > -1)
+                    {
+                        ChatBox.Text += "Disconnected to server " + DateTime.Now.ToString();
+
+                        _socket.Shutdown(SocketShutdown.Both);
+                        _socket.Close();
+
+                        break;
+                    }
+
+                    ChatBox.Text += response + "\r\n";
                 }
-
-                ChatBox.Text += response + "\r\n";
-
-                BtnSend.IsEnabled = true;
             });
         }
     }
